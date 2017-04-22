@@ -61,8 +61,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         return parseInt(normalizedText);
       },
       invested: function() {
-        var innerText = row.children[rowDef.invested].innerText;
-        var normalizedText = innerText.replace(/£|,/g, '');
+        var investedCell = row.children[rowDef.invested];
+        if (investedCell == undefined)
+          return undefined;
+        var normalizedText = investedCell.innerText.replace(/£|,/g, '');
         return parseFloat(normalizedText);
       },
       value: function() {
