@@ -104,17 +104,27 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     return loanTotal;
   }
 
-  console.log("Got minimum rate", message.minimumRate);
-  var minimumRate = message.minimumRate ? message.minimumRate : 0;
-  console.log("Got minimum days", message.minimumDays);
-  var minimumDays = message.minimumDays ? message.minimumDays : -180;
+  function hideLoans(minimumRate, minimumDays) {
+    forEachLoan(function(loan) {
+      if (loan.rate() < minimumRate || loan.remainingTerm() < minimumDays)
+        loan.row.style.display = 'none';
+      else
+        loan.row.style.display = 'table-row';
+    });
+  }
 
-  forEachLoan(function(loan) {
-    if (loan.rate() < minimumRate || loan.remainingTerm() < minimumDays)
-      loan.row.style.display = 'none';
-    else
-      loan.row.style.display = 'table-row';
-  });
+  chrome.storage.local.get(['minimumRate', 'minimumDays'], function(items) {
+    console.log("Got stored value", items)
+
+    var minimumRate = message.minimumRate ? message.minimumRate : items.minimumRate ? items.minimumRate : 0;
+    console.log("Got minimum rate", minimumRate);
+    var minimumDays = message.minimumDays ? message.minimumDays : items.minimumDays ? items.minimumDays : -180;
+    console.log("Got minimum days", minimumDays);
+
+    chrome.storage.local.set({'minimumRate' : minimumRate, 'minimumDays' : minimumDays})
+
+    hideLoans(minimumRate, minimumDays)
+  })
 
   highlightLoans();
 
