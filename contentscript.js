@@ -45,33 +45,24 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 
   function newLoan(row, rowDef) {
+    function extractValue(index, trim, castFun) {
+      var cell = row.children[index];
+      if (cell == undefined)
+        return undefined;
+      var innerText = cell.innerText;
+      var normalizedText = innerText.replace(trim, '');
+      return castFun(normalizedText);
+    }
+
     return {
       row: row,
       highlight: function() {
         row.style.backgroundColor = '#79bc50'
       },
-      rate: function() {
-        var innerText = row.children[rowDef.rate].innerText;
-        var normalizedText = innerText.replace(/%/g, '');
-        return parseInt(normalizedText);
-      },
-      remainingTerm: function() {
-        var innerText = row.children[rowDef.remainingTerm].innerText;
-        var normalizedText = innerText.replace(/ days/g, '');
-        return parseInt(normalizedText);
-      },
-      invested: function() {
-        var investedCell = row.children[rowDef.invested];
-        if (investedCell == undefined)
-          return undefined;
-        var normalizedText = investedCell.innerText.replace(/£|,/g, '');
-        return parseFloat(normalizedText);
-      },
-      value: function() {
-        var innerText = row.children[rowDef.available].innerText;
-        var normalizedText = innerText.replace(/£|,/g, '');
-        return parseFloat(normalizedText);
-      }
+      rate: extractValue(rowDef.rate, /%/g, parseInt),
+      remainingTerm: extractValue(rowDef.remainingTerm, / days/g, parseInt),
+      invested: extractValue(rowDef.invested, /£|,/g, parseFloat),
+      value: extractValue(rowDef.available, /£|,/g, parseFloat)
     };
   }
 
@@ -85,7 +76,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
   function highlightLoans() {
     forEachLoan(function(loan) {
-      if (loan.invested() > 0)
+      if (loan.invested > 0)
         loan.highlight();
     })
   }
@@ -93,7 +84,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   function getTotalAvailable() {
     var loanTotal = 0;
     forEachLoan(function(loan) {
-      loanTotal += loan.value();
+      loanTotal += loan.value;
     });
     return loanTotal;
   }
@@ -101,14 +92,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   function getTotalInvested() {
     var loanTotal = 0;
     forEachLoan(function(loan) {
-      loanTotal += loan.invested();
+      loanTotal += loan.invested;
     });
     return loanTotal;
   }
 
   function hideLoans(minimumRate, minimumDays) {
     forEachLoan(function(loan) {
-      if (loan.rate() < minimumRate || loan.remainingTerm() < minimumDays)
+      if (loan.rate < minimumRate || loan.remainingTerm < minimumDays)
         loan.row.style.display = 'none';
       else
         loan.row.style.display = 'table-row';
@@ -139,7 +130,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     });
     console.log("Got loans", loans);
     loans.sort(function (a, b) {
-      return b.remainingTerm() - a.remainingTerm();
+      return b.remainingTerm - a.remainingTerm;
     });
     for (var i = 0; i < loans.length; i++) {
       table.children[1].appendChild(loans[i].row);
@@ -150,10 +141,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
   var invested = pageModel().loggedIn() ? getTotalInvested() : 0;
   var loanTotal = getTotalAvailable();
+  loanTotal = Number(loanTotal).toLocaleString();
 
   console.log("Got loan total: " + loanTotal);
-
-  loanTotal = Number(loanTotal).toLocaleString();
   sendResponse({
     invested: invested,
     total: loanTotal
