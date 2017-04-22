@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+  "name": "Lendy helper",
+  "description": "Click on this extension when viewing the loans page on lendy.co.uk to count the size of the secondary market, see what your exposure is, and filter visible loan parts",
+  "version": "1.4",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts": [{
+      "matches": ["https://lendy.co.uk/loans/available"],
+      "js": ["contentscript.js"]
+    }
+  ],
+  "page_action": {
+    "default_icon": "extension-icon.png",
+    "default_title": "Lendy statistics",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab",
+    "declarativeContent"
+  ]
+}

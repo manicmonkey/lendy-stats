@@ -1,0 +1,52 @@
+<!doctype html>
+<meta charset="utf-8">
+<html>
+  <head>
+    <title>Lendy - secondary market total</title>
+    <style>
+      body {
+        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+        font-size: 100%;
+        width: 380px;
+      }
+      #status {
+        /* avoid an excessively wide status text */
+        font-size: larger;
+        white-space: pre;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-align: right;
+        max-width: 400px;
+      }
+    </style>
+
+    <script src="popup.js"></script>
+  </head>
+  <body>
+    <h1>Lendy statistics</h1>
+    Secondary market total: <span id="available"></span><br/>
+    Secondary market investment total: <span id="invested"></span><br/>
+    <form name="loanVisibility">
+      Minimum rate to show:<br/>
+      <input name="minimumRate" type="radio" value="12">12%<br/>
+      <input name="minimumRate" type="radio" value="11">11%<br/>
+      <input name="minimumRate" type="radio" value="10">10%<br/>
+      <input name="minimumRate" type="radio" value="9">9%<br/>
+      <input name="minimumRate" type="radio" value="8">8%<br/>
+      <input name="minimumRate" type="radio" value="7">7%<br/>
+      Minimum days to show:<br/>
+      <input name="minimumDays" type="radio" value="100">100<br/>
+      <input name="minimumDays" type="radio" value="90">90<br/>
+      <input name="minimumDays" type="radio" value="80">80<br/>
+      <input name="minimumDays" type="radio" value="70">70<br/>
+      <input name="minimumDays" type="radio" value="60">60<br/>
+      <input name="minimumDays" type="radio" value="50">50<br/>
+      <input name="minimumDays" type="radio" value="40">40<br/>
+      <input name="minimumDays" type="radio" value="30">30<br/>
+      <input name="minimumDays" type="radio" value="20">20<br/>
+      <input name="minimumDays" type="radio" value="10">10<br/>
+      <input name="minimumDays" type="radio" value="0">0<br/>
+    </form>
+  </body>
+</html>
+
